@@ -4,7 +4,7 @@ import * as config from "./config.ts";
 
 const API_PREFIX = '/admin/api';
 
-const app = new Application();
+const app = new Application({ proxy: true });
 const router = new Router();
 
 // request logging
@@ -12,7 +12,7 @@ app.use(async (ctx, next) => {
     const start = Date.now();
     await next();
     const timeUsed = Date.now() - start;
-    console.info(`(${timeUsed} ms) ${ctx.response.status} ${ctx.request.method} ${ctx.request.url}`);
+    console.info(`(${timeUsed} ms) ${ctx.request.ip} ${ctx.response.status} ${ctx.request.method} ${ctx.request.url}`);
 });
 
 app.use((ctx, next) => {
@@ -28,8 +28,9 @@ const authValue = 'Basic ' + btoa(config.username + ':' + config.password);
 
 app.use((ctx, next) => {
     if (ctx.request.headers.get('Authorization') !== authValue) {
-        ctx.response.headers.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
+        ctx.response.headers.set('WWW-Authenticate', 'Basic realm="Login"');
         ctx.response.status = 401;
+        ctx.response.body = "HTTP Basic 认证失败";
         ctx.respond = true;
         return;
     }
@@ -81,7 +82,7 @@ app.addEventListener('error', ev => console.error(ev.error));
 app.addEventListener('listen', ev => console.info(`listening on ${ev.hostname} port ${ev.port}`));
 
 db.init().then(async () => {
-    console.log({
+    console.log('test query:', {
         records: await db.getRecords(1),
         total: await db.getCount()
     });

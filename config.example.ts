@@ -7,4 +7,5 @@ export const dbConfig = {
     password: ''
 };
 
+export const username = '';
 export const password = '';
