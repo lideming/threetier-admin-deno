@@ -16,20 +16,20 @@ class Db {
     async init() {
         await this.client.connect({ poolSize: 3, ...dbConfig });
     }
-    async getRecords(limit: number, after?: {time: number, sno: number}) {
+    async getRecords(limit?: number, after?: { time: number, sno: number }) {
         console.log({ limit, next: after });
         const sql = `SELECT sname, sno, sphone, semail, squestion1, squestion2, UNIX_TIMESTAMP(ctime) as timestamp
             FROM threetier
             ${after ? 'WHERE ctime < FROM_UNIXTIME(?) OR (ctime = FROM_UNIXTIME(?) AND sno > ?)' : ''}
             ORDER BY ctime DESC, sno
-            LIMIT ?;`;
+            ${limit != null ? 'LIMIT ?' : ''};`;
         const args = [];
         if (after) {
             args.push(after.time);
             args.push(after.time);
             args.push(after.sno);
         }
-        args.push(limit);
+        if (limit != null) args.push(limit);
         var resp = await this.client.query(sql, args) as Record[];
         return resp;
     }

@@ -1,4 +1,4 @@
-import { db } from "./db.ts";
+import { db, Record } from "./db.ts";
 import { Application, Router, helpers } from "https://deno.land/x/oak@v6.2.0/mod.ts";
 import * as config from "./config.ts";
 
@@ -60,6 +60,20 @@ router
             records: await db.getRecords(50, before ? { time: before!, sno: afterSno! } : undefined),
             total: before ? null : await db.getCount()
         };
+    })
+    .get(API_PREFIX + '/records.csv', async ctx => {
+        var records = await db.getRecords();
+        console.log(`csv: ${records.length} records`);
+        ctx.response.type = 'text/csv';
+        var keys = Object.keys(records[0]) as (keyof Record)[];
+        var csv = keys.join(',') + '\r\n';
+        for (const r of records) {
+            //@ts-ignore
+            r.timestamp = new Date(r.timestamp * 1000).toISOString();
+            csv += keys.map(k => '"' + r[k].toString().replace(/"/g, '""') + '"').join(',') + '\r\n';
+        }
+        ctx.response.body = csv;
+        ctx.respond = true;
     })
     ;
 
