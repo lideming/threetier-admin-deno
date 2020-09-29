@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 child: [
                     // { tag: 'div.record-col.seq', text: () => (this.data as any).seq },
                     { tag: 'div.record-col.ctime', text: () => new Date(this.data.timestamp * 1000).toLocaleString() },
-                    { tag: 'div.record-col.sname', text: () => `${this.data.sname}(${this.data.sno})` },
+                    { tag: 'div.record-col.sname', text: () => `${this.data.sname} (${this.data.sno})` },
                     // { tag: 'div.record-col.sno', text: () => this.data.sno },
                     { tag: 'div.record-col.sphone', text: () => this.data.sphone },
                     { tag: 'div.record-col.semail', text: () => this.data.semail },
