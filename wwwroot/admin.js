@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fetching = true;
             try {
                 var resp = yield fetch('api/records'
-                    + (after ? '?beforeTime=' + encodeURIComponent(after.time) + '&afterSno=' + encodeURIComponent(after.sno) : ''));
+                    + (after ? '?beforeTime=' + encodeURIComponent(after.time) + '&afterSno=' + encodeURIComponent(after.sno) : ''), { credentials: 'same-origin' });
                 var obj = yield resp.json();
                 obj.records.map(r => (Object.assign({ seq: seq++ }, r))).forEach(r => {
                     records.push(r);

@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetching = true;
         try {
             var resp = await fetch('api/records'
-                + (after ? '?beforeTime=' + encodeURIComponent(after.time) + '&afterSno=' + encodeURIComponent(after.sno) : '')
+                + (after ? '?beforeTime=' + encodeURIComponent(after.time) + '&afterSno=' + encodeURIComponent(after.sno) : ''),
+                { credentials: 'same-origin' }
             );
             var obj = await resp.json() as { records: SRecord[], total: number | null };
             obj.records.map(r => ({ seq: seq++, ...r })).forEach(r => {
