@@ -5,6 +5,10 @@
     border-radius: 10px;
 } */
 
+body {
+    margin: 0;
+}
+
 #header {
     display: flex;
     justify-content: space-between;
@@ -16,7 +20,7 @@
     top: 0;
     left: 0;
     right: 0;
-    margin: 0 0 20px;
+    margin: 0 0 10px;
 }
 
 .record {
@@ -33,12 +37,12 @@
 
 .record-col {
     white-space: pre-wrap;
-    flex: 1 1 15%;
-    margin: 5px;
+    flex: 0 1 25%;
+    padding: 5px;
 }
 
 .record-col.sphone {
-    flex-basis: 10%;
+    flex-basis: 13%;
 }
 
 .record-col.ctime {
@@ -54,7 +58,11 @@
 }
 
 .record-col.squestion1, .record-col.squestion2 {
-    flex-basis: 30%;
+    flex-basis: 40%;
+}
+
+.record-col.squestion1.empty {
+    background: none;
 }
 
 .btn.inline {
@@ -68,5 +76,8 @@
     }
     .record-col.squestion1, .record-col.squestion2 {
         flex-basis: 100%;
+    }
+    .record-col.squestion1.empty {
+        display: none;
     }
 }

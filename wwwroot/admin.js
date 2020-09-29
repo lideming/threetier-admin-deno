@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     webfx.injectWebfxCss();
     const listView = new ListView(document.getElementById('records'));
     const stat = new TextView(document.getElementById('stat'));
+    const domHeader = document.getElementById('header');
     class RecordView extends ListViewItem {
         constructor(data) {
             super();
@@ -30,7 +31,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     // { tag: 'div.record-col.sno', text: () => this.data.sno },
                     { tag: 'div.record-col.sphone', text: () => this.data.sphone },
                     { tag: 'div.record-col.semail', text: () => this.data.semail },
-                    { tag: 'div.record-col.squestion1', text: () => this.data.squestion1 },
+                    {
+                        tag: 'div.record-col.squestion1', text: () => this.data.squestion1,
+                        update: (dom) => {
+                            utils.toggleClass(dom, 'empty', !this.data.squestion1);
+                        }
+                    },
                     { tag: 'div.record-col.squestion2', text: () => this.data.squestion2 },
                 ]
             };
@@ -73,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return getData(last ? { time: last.timestamp, sno: last.sno } : undefined);
     }
     window.addEventListener('scroll', (ev) => {
+        domHeader.style.boxShadow = window.scrollY == 0 ? 'none' : '';
         if (!fetching && !end
             && window.scrollY + window.innerHeight >= document.body.scrollHeight - 300) {
             getNext();
