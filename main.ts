@@ -1,5 +1,5 @@
 import { db, Record } from "./db.ts";
-import { Application, Router, helpers } from "https://deno.land/x/oak@v6.2.0/mod.ts";
+import { Application, Router, helpers, Cookies, Context } from "https://deno.land/x/oak@v6.2.0/mod.ts";
 import * as config from "./config.ts";
 
 const API_PREFIX = '/admin/api';
@@ -27,15 +27,37 @@ app.use((ctx, next) => {
 const authValue = 'Basic ' + btoa(config.username + ':' + config.password);
 
 app.use((ctx, next) => {
-    if (ctx.request.headers.get('Authorization') !== authValue) {
+    var ok = false;
+    if (ctx.request.headers.get('Authorization') == authValue) {
+        ok = true;
+    } else if (ctx.cookies.get('admin-auth') == authValue) {
+        ok = true;
+    } else if (ctx.request.url.pathname == '/admin/login' && ctx.request.method == 'POST') {
+        return handleLogin(ctx);
+    }
+    if (ok) {
+        return next();
+    } else {
         ctx.response.headers.set('WWW-Authenticate', 'Basic realm="Login"');
         ctx.response.status = 401;
-        ctx.response.body = "HTTP Basic 认证失败";
         ctx.respond = true;
-        return;
+        return ctx.send({
+            root: 'wwwroot/',
+            path: 'login.html'
+        }) as Promise<void>;
     }
-    return next();
 });
+
+async function handleLogin(ctx: Context) {
+    const form = await ctx.request.body({ type: 'form' }).value;
+    const username = form.get('username');
+    const password = form.get('password');
+    if (username == config.username && password == config.password) {
+        ctx.cookies.set('admin-auth', authValue, { sameSite: 'strict' })
+    }
+    ctx.response.redirect('/admin/');
+    ctx.respond = true;
+}
 
 app.use(router.routes());
 
@@ -43,7 +65,7 @@ app.use(async (ctx) => {
     if (ctx.request.url.pathname.startsWith('/admin/')) {
         await ctx.send({
             path: ctx.request.url.pathname.substr(6),
-            root: Deno.cwd() + '/wwwroot/',
+            root: 'wwwroot/',
             index: 'index.html',
             gzip: true,
             extensions: ['html']
