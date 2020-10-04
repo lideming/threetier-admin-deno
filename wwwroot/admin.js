@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -22,24 +21,15 @@ document.addEventListener('DOMContentLoaded', function () {
             this.data = data;
         }
         createDom() {
-            return {
-                tag: 'div.record',
-                child: [
-                    // { tag: 'div.record-col.seq', text: () => (this.data as any).seq },
-                    { tag: 'div.record-col.ctime', text: () => new Date(this.data.timestamp * 1000).toLocaleString() },
-                    { tag: 'div.record-col.sname', text: () => `${this.data.sname} (${this.data.sno})` },
-                    // { tag: 'div.record-col.sno', text: () => this.data.sno },
-                    { tag: 'div.record-col.sphone', text: () => this.data.sphone },
-                    { tag: 'div.record-col.semail', text: () => this.data.semail },
-                    {
-                        tag: 'div.record-col.squestion1', text: () => this.data.squestion1,
-                        update: (dom) => {
-                            utils.toggleClass(dom, 'empty', !this.data.squestion1);
-                        }
-                    },
-                    { tag: 'div.record-col.squestion2', text: () => this.data.squestion2 },
-                ]
-            };
+            return webfx.jsxFactory("div", { class: "record" },
+                webfx.jsxFactory("div", { class: "record-col ctime" }, () => new Date(this.data.timestamp * 1000).toLocaleString()),
+                webfx.jsxFactory("div", { class: "record-col sname" }, () => `${this.data.sname} (${this.data.sno})`),
+                webfx.jsxFactory("div", { class: "record-col sphone" }, () => this.data.sphone),
+                webfx.jsxFactory("div", { class: "record-col semail" }, () => this.data.semail),
+                webfx.jsxFactory("div", { class: "record-col squestion1", update: (dom) => {
+                        utils.toggleClass(dom, 'empty', !this.data.squestion1);
+                    } }, () => this.data.squestion1),
+                webfx.jsxFactory("div", { class: "record-col squestion2" }, () => this.data.squestion2));
         }
     }
     var fetching = false;
@@ -79,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return getData(last ? { time: last.timestamp, sno: last.sno } : undefined);
     }
     window.addEventListener('scroll', (ev) => {
-        domHeader.style.boxShadow = window.scrollY == 0 ? 'none' : '';
+        domHeader.style.boxShadow = window.scrollY < 1 ? 'none' : '';
         if (!fetching && !end
             && window.scrollY + window.innerHeight >= document.body.scrollHeight - 300) {
             getNext();
