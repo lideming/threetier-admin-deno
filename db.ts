@@ -1,4 +1,4 @@
-import { Client } from "https://deno.land/x/mysql/mod.ts";
+import { Client } from "./dep.ts";
 import { dbConfig } from "./config.ts";
 
 export interface Record {
@@ -14,7 +14,7 @@ export interface Record {
 class Db {
     client = new Client();
     async init() {
-        await this.client.connect({ poolSize: 3, ...dbConfig });
+        await this.client.connect({ poolSize: 3, ...dbConfig, idleTimeout: 3600000 });
     }
     async getRecords(limit?: number, after?: { time: number, sno: number }) {
         console.log({ limit, next: after });
