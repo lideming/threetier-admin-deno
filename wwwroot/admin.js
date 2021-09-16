@@ -22,14 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         createDom() {
             return webfx.jsxFactory("div", { class: "record" },
-                webfx.jsxFactory("div", { class: "record-col ctime" }, () => new Date(this.data.timestamp * 1000).toLocaleString()),
-                webfx.jsxFactory("div", { class: "record-col sname" }, () => `${this.data.sname} (${this.data.sno})`),
-                webfx.jsxFactory("div", { class: "record-col sphone" }, () => this.data.sphone),
-                webfx.jsxFactory("div", { class: "record-col semail" }, () => this.data.semail),
-                webfx.jsxFactory("div", { class: "record-col squestion1", update: (dom) => {
-                        utils.toggleClass(dom, 'empty', !this.data.squestion1);
-                    } }, () => this.data.squestion1),
-                webfx.jsxFactory("div", { class: "record-col squestion2" }, () => this.data.squestion2));
+                webfx.jsxFactory("div", { class: "record-col time" }, () => `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`),
+                webfx.jsxFactory("div", { class: "record-col basic" }, () => `${this.data.student_name} (${this.data.student_id})`),
+                webfx.jsxFactory("div", { class: "record-col q1" }, () => this.data.why_join),
+                webfx.jsxFactory("div", { class: "record-col q2", update: (dom) => {
+                        utils.toggleClass(dom, 'empty', !this.data.self_intro);
+                    } }, () => this.data.self_intro));
         }
     }
     var fetching = false;
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fetching = true;
             try {
                 var resp = yield fetch('api/records'
-                    + (after ? '?beforeTime=' + encodeURIComponent(after.time) + '&afterSno=' + encodeURIComponent(after.sno) : ''), { credentials: 'same-origin' });
+                    + (after ? '?after=' + encodeURIComponent(after) : ''), { credentials: 'same-origin' });
                 var obj = yield resp.json();
                 obj.records.map(r => (Object.assign({ seq: seq++ }, r))).forEach(r => {
                     records.push(r);
@@ -66,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function getNext() {
         const last = records[records.length - 1];
-        return getData(last ? { time: last.timestamp, sno: last.sno } : undefined);
+        return getData(last ? last.id : undefined);
     }
     window.addEventListener('scroll', (ev) => {
         domHeader.style.boxShadow = window.scrollY < 1 ? 'none' : '';

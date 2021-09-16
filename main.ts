@@ -1,5 +1,5 @@
 import { db, Record } from "./db.ts";
-import { Application, Router, helpers, Cookies, Context } from "https://deno.land/x/oak@v6.2.0/mod.ts";
+import { Application, Router, Context } from "https://deno.land/x/oak@v9.0.0/mod.ts";
 import * as config from "./config.ts";
 
 const API_PREFIX = '/admin/api';
@@ -26,11 +26,11 @@ app.use((ctx, next) => {
 
 const authValue = 'Basic ' + btoa(config.username + ':' + config.password);
 
-app.use((ctx, next) => {
+app.use(async (ctx, next) => {
     var ok = false;
     if (ctx.request.headers.get('Authorization') == authValue) {
         ok = true;
-    } else if (ctx.cookies.get('admin-auth') == authValue) {
+    } else if (await ctx.cookies.get('admin-auth') == authValue) {
         ok = true;
     } else if (ctx.request.url.pathname == '/admin/login' && ctx.request.method == 'POST') {
         return handleLogin(ctx);
@@ -77,12 +77,12 @@ router
     .get(API_PREFIX + '/records', async ctx => {
         const req = ctx.request;
         const params = req.url.searchParams;
-        const before = params.has('beforeTime') ? parseInt(params.get('beforeTime')!) : null;
-        const afterSno = params.has('afterSno') ? parseInt(params.get('afterSno')!) : null;
-        ctx.response.body = {
-            records: await db.getRecords(50, before ? { time: before!, sno: afterSno! } : undefined),
-            total: before ? null : await db.getCount()
-        };
+        const after = params.has('after') ? parseInt(params.get('after')!) : undefined;
+        const [records, total] = await Promise.all([
+            db.getRecords(50, after),
+            after ? null : db.getCount()
+        ]);
+        ctx.response.body = { records, total };
     })
     .get(API_PREFIX + '/records.csv', async ctx => {
         var records = await db.getRecords();
@@ -92,8 +92,8 @@ router
         var csv = keys.join(',') + '\r\n';
         for (const r of records) {
             //@ts-ignore
-            r.timestamp = new Date(r.timestamp * 1000).toISOString();
-            csv += keys.map(k => '"' + r[k].toString().replace(/"/g, '""') + '"').join(',') + '\r\n';
+            r.ctime = new Date(r.ctime * 1000).toISOString();
+            csv += keys.map(k => '"' + r[k]?.toString().replace(/"/g, '""') + '"').join(',') + '\r\n';
         }
         ctx.response.body = csv;
         ctx.respond = true;
@@ -104,10 +104,8 @@ app.addEventListener('error', ev => console.error(ev.error));
 app.addEventListener('listen', ev => console.info(`listening on ${ev.hostname} port ${ev.port}`));
 
 db.init().then(async () => {
-    console.log('test query:', {
-        records: await db.getRecords(1),
-        total: await db.getCount()
-    });
+    const [records, total] = await Promise.all([db.getRecords(1), db.getCount()])
+    console.log('test query:', { records, total });
 });
 
-app.listen({ hostname: '127.0.0.1', port: 5012 });
+app.listen(config.listener);

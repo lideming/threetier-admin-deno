@@ -2,13 +2,12 @@
 declare const webfx: typeof import("@yuuza/webfx");
 
 interface SRecord {
-    sname: string;
-    sno: number;
-    sphone: string;
-    semail: string;
-    squestion1: string;
-    squestion2: string;
-    timestamp: number;
+    id: number;
+    student_id: any;
+    student_name: string;
+    why_join: string;
+    self_intro: string;
+    ctime: number;
 }
 
 var records: SRecord[] = [];
@@ -30,17 +29,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         createDom() {
             return <div class="record">
-                <div class="record-col ctime">{() => new Date(this.data.timestamp * 1000).toLocaleString()}</div>
-                <div class="record-col sname">{() => `${this.data.sname} (${this.data.sno})`}</div>
-                <div class="record-col sphone">{() => this.data.sphone}</div>
-                <div class="record-col semail">{() => this.data.semail}</div>
-                <div class="record-col squestion1"
+                <div class="record-col time">{() => `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`}</div>
+                <div class="record-col basic">{() => `${this.data.student_name} (${this.data.student_id})`}</div>
+                {/* <div class="record-col sphone">{() => this.data.sphone}</div>
+                <div class="record-col semail">{() => this.data.semail}</div> */}
+                <div class="record-col q1">{() => this.data.why_join}</div>
+                <div class="record-col q2"
                     update={(dom: HTMLDivElement) => {
-                        utils.toggleClass(dom, 'empty', !this.data.squestion1);
+                        utils.toggleClass(dom, 'empty', !this.data.self_intro);
                     }}>
-                    {() => this.data.squestion1}
+                    {() => this.data.self_intro}
                 </div>
-                <div class="record-col squestion2">{() => this.data.squestion2}</div>
             </div>;
         }
     }
@@ -51,11 +50,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var seq = 1;
     var total = 0;
 
-    async function getData(after?: { time: number, sno: number }) {
+    async function getData(after?: number) {
         fetching = true;
         try {
             var resp = await fetch('api/records'
-                + (after ? '?beforeTime=' + encodeURIComponent(after.time) + '&afterSno=' + encodeURIComponent(after.sno) : ''),
+                + (after ? '?after=' + encodeURIComponent(after) : ''),
                 { credentials: 'same-origin' }
             );
             var obj = await resp.json() as { records: SRecord[], total: number | null };
@@ -76,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getNext() {
         const last = records[records.length - 1];
-        return getData(last ? { time: last.timestamp, sno: last.sno } : undefined);
+        return getData(last ? last.id : undefined);
     }
 
     window.addEventListener('scroll', (ev) => {
