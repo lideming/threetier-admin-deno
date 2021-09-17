@@ -5,9 +5,12 @@ export interface Record {
     id: number;
     student_id: any;
     student_name: string;
+    qq: string;
+    email: string;
     why_join: string;
     self_intro: string;
     ctime: number;
+    hidden: number;
 }
 
 class Db {
@@ -17,7 +20,7 @@ class Db {
     }
     async getRecords(limit?: number, after?: number) {
         console.log({ limit, next: after });
-        const sql = `SELECT id, student_id, student_name, why_join, self_intro, UNIX_TIMESTAMP(ctime) as ctime
+        const sql = `SELECT id, student_id, student_name, qq, email, why_join, self_intro, UNIX_TIMESTAMP(ctime) as ctime, hidden
             FROM t_signup_user
             ${after ? 'WHERE id < ?' : ''}
             ORDER BY id DESC
@@ -33,6 +36,9 @@ class Db {
     async getCount() {
         const result = await this.client.query('SELECT count(*) as count FROM t_signup_user;');
         return result[0]['count'] as number;
+    }
+    async setHidden(ids: number[], hidden: number) {
+        await this.client.query(`UPDATE t_signup_user SET hidden = ? WHERE id IN ?`, [hidden, ids]);
     }
 }
 
