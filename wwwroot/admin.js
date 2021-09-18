@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
         createDom() {
             return webfx.jsxFactory("div", { class: "record", hidden: () => !!this.data.hidden },
                 webfx.jsxFactory("div", { class: "record-col time" }, () => `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`),
-                webfx.jsxFactory("div", { class: "record-col basic" }, () => `${this.data.student_name} (${this.data.student_id})`),
-                webfx.jsxFactory("div", { class: "record-col sphone" }, () => this.data.qq),
-                webfx.jsxFactory("div", { class: "record-col semail" }, () => this.data.email),
+                webfx.jsxFactory("div", { class: "record-col name" }, () => `${this.data.student_name} (${this.data.student_id})`),
+                webfx.jsxFactory("div", { class: "record-col qq" }, () => this.data.qq),
+                webfx.jsxFactory("div", { class: "record-col email" }, () => this.data.email),
                 webfx.jsxFactory("div", { class: "record-col q1" }, () => this.data.why_join),
                 webfx.jsxFactory("div", { class: "record-col q2", update: (dom) => {
                         toggleClass(dom, 'empty', !this.data.self_intro);

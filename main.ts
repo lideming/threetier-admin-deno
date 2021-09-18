@@ -79,7 +79,7 @@ router
         const params = req.url.searchParams;
         const after = params.has('after') ? parseInt(params.get('after')!) : undefined;
         const [records, total] = await Promise.all([
-            db.getRecords(200, after),
+            db.getRecords(100, after),
             after ? null : db.getCount()
         ]);
         ctx.response.body = { records, total };

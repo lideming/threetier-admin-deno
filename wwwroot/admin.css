@@ -7,6 +7,7 @@
 
 body {
     margin: 0;
+    line-height: 1.5;
 }
 
 #header {
@@ -21,14 +22,16 @@ body {
     left: 0;
     right: 0;
     margin: 0 0 10px;
+    line-height: 1;
 }
 
 .record {
-    display: flex;
-    align-items: center;
+    display: grid;
+    align-items: start;
     border-bottom: solid 1px gray;
-    padding: 5px;
-    /* min-width: 800px; */
+    grid-template-rows: auto;
+    grid-template-columns: 10em 10em 10em 15em 1fr 1fr;
+    grid-template-areas: "time name qq email q1 q2";
 }
 
 .record:hover {
@@ -37,28 +40,36 @@ body {
 
 .record-col {
     white-space: pre-wrap;
-    flex: 0 1 25%;
     padding: 5px;
-}
-
-.record-col.sphone {
-    flex-basis: 13%;
 }
 
 .record-col.time {
     background: rgba(0, 174, 255, 0.1);
+    grid-area: time;
 }
 
-.record-col.basic {
+.record-col.name {
     background: rgba(255, 208, 0, 0.1);
+    grid-area: name;
 }
 
-.record-col.q1, .record-col.q2 {
-    flex-basis: 40%;
+.record-col.qq {
+    flex-basis: 13%;
+    grid-area: qq;
+}
+
+.record-col.email {
+    flex-basis: 15%;
+    grid-area: email;
+}
+
+.record-col.q1 {
+    grid-area: q1;
 }
 
 .record-col.q2 {
     background: rgba(0, 255, 0, .1);
+    grid-area: q2;
 }
 
 .record-col.q2.empty {
@@ -72,12 +83,25 @@ body {
 
 @media only screen and (max-width: 1200px) {
     .record {
-        flex-flow: row wrap;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-areas:
+        "time time name name qq qq"
+        "time time name name email email"
+        "q1 q1 q1 q2 q2 q2"
+        ;
     }
-    .record-col.squestion1, .record-col.squestion2 {
-        flex-basis: 100%;
-    }
-    .record-col.squestion1.empty {
+    .record-col.q2.empty {
         display: none;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .record {
+        grid-template-columns: 1fr 1fr 1.5fr;
+        grid-template-areas:
+        "time name qq"
+        "time name email"
+        "q1 q1 q1"
+        "q2 q2 q2";
     }
 }

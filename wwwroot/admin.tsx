@@ -34,9 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
         createDom() {
             return <div class="record" hidden={() => !!this.data.hidden}>
                 <div class="record-col time">{() => `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`}</div>
-                <div class="record-col basic">{() => `${this.data.student_name} (${this.data.student_id})`}</div>
-                <div class="record-col sphone">{() => this.data.qq}</div>
-                <div class="record-col semail">{() => this.data.email}</div>
+                <div class="record-col name">{() => `${this.data.student_name} (${this.data.student_id})`}</div>
+                <div class="record-col qq">{() => this.data.qq}</div>
+                <div class="record-col email">{() => this.data.email}</div>
                 <div class="record-col q1">{() => this.data.why_join}</div>
                 <div class="record-col q2"
                     update={(dom: HTMLDivElement) => {
