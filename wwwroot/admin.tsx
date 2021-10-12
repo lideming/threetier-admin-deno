@@ -3,7 +3,7 @@ declare const webfx: typeof import("@yuuza/webfx");
 
 interface SRecord {
     id: number;
-    student_id: any;
+    student_id: string;
     student_name: string;
     qq: string;
     email: string;
@@ -33,16 +33,29 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         createDom() {
             return <div class="record" hidden={() => !!this.data.hidden}>
-                <div class="record-col time">{() => `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`}</div>
-                <div class="record-col name">{() => `${this.data.student_name} (${this.data.student_id})`}</div>
-                <div class="record-col qq">{() => this.data.qq}</div>
-                <div class="record-col email">{() => this.data.email}</div>
-                <div class="record-col q1">{() => this.data.why_join}</div>
+                <div class="record-col time">{`(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`}</div>
+                <div class="record-col name">
+                    <b>{this.data.student_name}</b>
+                    {' ('}
+                    {
+                        this.data.student_id.length == 10 ?
+                        [
+                            this.data.student_id.substring(0, 2),
+                            <b>{this.data.student_id.substring(2, 5)}</b>,
+                            this.data.student_id.substring(5),
+                        ]
+                        : <del>{this.data.student_id}</del>
+                    }
+                    )
+                </div>
+                <div class="record-col qq">{this.data.qq ?? ""}</div>
+                <div class="record-col email">{this.data.email ?? ""}</div>
+                <div class="record-col q1">{this.data.why_join ?? ""}</div>
                 <div class="record-col q2"
                     update={(dom: HTMLDivElement) => {
                         toggleClass(dom, 'empty', !this.data.self_intro);
                     }}>
-                    {() => this.data.self_intro}
+                    {this.data.self_intro ?? ""}
                 </div>
             </div>;
         }

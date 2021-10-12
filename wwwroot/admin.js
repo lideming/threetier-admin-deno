@@ -22,15 +22,26 @@ document.addEventListener('DOMContentLoaded', function () {
             this.data = data;
         }
         createDom() {
+            var _a, _b, _c, _d;
             return webfx.jsxFactory("div", { class: "record", hidden: () => !!this.data.hidden },
-                webfx.jsxFactory("div", { class: "record-col time" }, () => `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`),
-                webfx.jsxFactory("div", { class: "record-col name" }, () => `${this.data.student_name} (${this.data.student_id})`),
-                webfx.jsxFactory("div", { class: "record-col qq" }, () => this.data.qq),
-                webfx.jsxFactory("div", { class: "record-col email" }, () => this.data.email),
-                webfx.jsxFactory("div", { class: "record-col q1" }, () => this.data.why_join),
+                webfx.jsxFactory("div", { class: "record-col time" }, `(${this.data.id}) ${new Date(this.data.ctime * 1000).toLocaleString()}`),
+                webfx.jsxFactory("div", { class: "record-col name" },
+                    webfx.jsxFactory("b", null, this.data.student_name),
+                    ' (',
+                    this.data.student_id.length == 10 ?
+                        [
+                            this.data.student_id.substring(0, 2),
+                            webfx.jsxFactory("b", null, this.data.student_id.substring(2, 5)),
+                            this.data.student_id.substring(5),
+                        ]
+                        : webfx.jsxFactory("del", null, this.data.student_id),
+                    ")"),
+                webfx.jsxFactory("div", { class: "record-col qq" }, (_a = this.data.qq) !== null && _a !== void 0 ? _a : ""),
+                webfx.jsxFactory("div", { class: "record-col email" }, (_b = this.data.email) !== null && _b !== void 0 ? _b : ""),
+                webfx.jsxFactory("div", { class: "record-col q1" }, (_c = this.data.why_join) !== null && _c !== void 0 ? _c : ""),
                 webfx.jsxFactory("div", { class: "record-col q2", update: (dom) => {
                         toggleClass(dom, 'empty', !this.data.self_intro);
-                    } }, () => this.data.self_intro));
+                    } }, (_d = this.data.self_intro) !== null && _d !== void 0 ? _d : ""));
         }
         postCreateDom() {
             super.postCreateDom();

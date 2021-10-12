@@ -98,6 +98,18 @@ router
         ctx.response.body = csv;
         ctx.respond = true;
     })
+    .get(API_PREFIX + '/records-2.csv', async ctx => {
+        var records = await db.getRecords2();
+        console.log(`csv: ${records.length} records`);
+        ctx.response.type = 'text/csv';
+        var keys = Object.keys(records[0]) as (keyof Record)[];
+        var csv = keys.join(',') + '\r\n';
+        for (const r of records) {
+            csv += keys.map(k => '"' + r[k]?.toString().replace(/"/g, '""') + '"').join(',') + '\r\n';
+        }
+        ctx.response.body = csv;
+        ctx.respond = true;
+    })
     ;
 
 app.addEventListener('error', ev => console.error(ev.error));
